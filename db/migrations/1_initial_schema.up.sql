@@ -1,6 +1,6 @@
+
 CREATE TABLE `shares` (
-  `uuid` VARCHAR(36) NOT NULL,
-  `userId` VARCHAR(45) NULL,
-  `postId` VARCHAR(45) NULL,
-  `sharedAt` DATETIME NULL,
-  PRIMARY KEY (`uuid`));
+  `userId` VARCHAR(45) NOT NULL,
+  `postId` VARCHAR(45) NOT NULL,
+  `sharedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`userId`, `postId`));
