@@ -1,0 +1,98 @@
+#Open in: http://editor.swagger.io/
+
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Mulan
+  description: Microservice related to shared posts implemented usin GO + MySQL
+  license:
+    name: Software Architecture, 2019-I
+host: 192.168.99.101:4000 #change
+basePath: /shares/
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+
+  /users/{userId}/sharing/{postId}:
+    post:
+      summary: Creates a new share relationship
+      operationId: createShare
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: The id of the user that is sharing a post
+        - name: postId
+          in: path
+          required: true
+          type: string
+          
+      responses:
+        '201':
+          description: Created
+
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: Delete share relationship
+      operationId: deleteShare
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: The id of the user that is sharing a post
+        - name: postId
+          in: path
+          required: true
+          type: string
+          
+      responses:
+        '200':
+          description: Ok
+
+        '500':
+          description: Internal Server Error
+  /users/{userId}/sharing:
+    get:
+      summary: Retrieves id posts shared by the user id
+      operationId: retrieveShares
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: The id of the user '
+      responses:
+        '200':
+          description: Ok
+          schema:
+            $ref: '#/definitions/postIdList'
+
+        '500':
+          description: Internal Server Error
+
+
+definitions:
+  postIdList:
+    type: object
+    required:
+      - list
+    properties:
+      list:
+        type: array
+        items:
+          type: object
+          properties:
+            postId:
+              type: string
+            date:
+              type: string
+ 
+
+ 
