@@ -16,8 +16,7 @@ consumes:
 produces:
   - application/json
 paths:
-
-  /users/{userId}/sharing/{postId}:
+  /create/{userId}/{postId}:
     post:
       summary: Creates a new share relationship
       operationId: createShare
@@ -38,27 +37,7 @@ paths:
 
         '500':
           description: Internal Server Error
-    delete:
-      summary: Delete share relationship
-      operationId: deleteShare
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          type: string
-          description: The id of the user that is sharing a post
-        - name: postId
-          in: path
-          required: true
-          type: string
-          
-      responses:
-        '200':
-          description: Ok
-
-        '500':
-          description: Internal Server Error
-  /users/{userId}/sharing:
+  /get/{userId}/:
     get:
       summary: Retrieves id posts shared by the user id
       operationId: retrieveShares
@@ -74,6 +53,25 @@ paths:
           schema:
             $ref: '#/definitions/postIdList'
 
+        '500':
+          description: Internal Server Error
+  /delete/{userId}/{postId}:
+    delete:
+      summary: Delete share relationship
+      operationId: deleteShare
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: string
+          description: The id of the user that is sharing a post
+        - name: postId
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Ok
         '500':
           description: Internal Server Error
 
@@ -93,6 +91,4 @@ definitions:
               type: string
             date:
               type: string
- 
-
  

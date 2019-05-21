@@ -18,21 +18,22 @@ func (app *App) SetupRouter() {
 	basedir := "/shares"
 	app.Router.
 		Methods("POST").
-		Path(basedir + "/users/{userId}/sharing/{postId}").
+		Path(basedir + "/create/{userId}/{postId}").
 		HandlerFunc(app.createShare)
 
 	app.Router.
 		Methods("DELETE").
-		Path(basedir + "/users/{userId}/sharing/{postId}").
+		Path(basedir + "/delete/{userId}/{postId}").
 		HandlerFunc(app.deleteShare)
 
 	app.Router.
 		Methods("GET").
-		Path(basedir + "/users/{userId}/sharing").
+		Path(basedir + "/get/{userId}").
 		HandlerFunc(app.getShares)
 }
 
 func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
+	log.Println("trying to create a share relationship")
 	flag := true
 	vars := mux.Vars(r)
 	userId, ok := vars["userId"]
@@ -70,8 +71,6 @@ func (app *App) getShares(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Print("No userId in the path")
 	}
-	log.Println(userId)
-
 	rows, err := app.Database.Query("SELECT postId, sharedAt FROM `shares` where userId = ?", userId)
 	defer rows.Close()
 	if err != nil {
@@ -86,7 +85,6 @@ func (app *App) getShares(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			continue
 		}
-		log.Println(post.PostId)
 		querys = append(querys, post)
 	}
 
@@ -98,6 +96,7 @@ func (app *App) getShares(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) deleteShare(w http.ResponseWriter, r *http.Request) {
+	log.Println("trying to delete a share relationship")
 	flag := true
 	vars := mux.Vars(r)
 	userId, ok := vars["userId"]
