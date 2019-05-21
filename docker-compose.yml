@@ -1,8 +1,21 @@
-version: '2'
+version: "2.1"
 services:
-  mysql:
+  ms:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    command:
+      - ./goapp
+  db:
     image: mysql
-    restart: always
+    healthcheck:
+      test: "mysqlcheck -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE"
+      interval: 20s
+      timeout: 5s
+      retries: 15
     environment:
         MYSQL_DATABASE: 'mulan_db'
         MYSQL_USER: 'user'
