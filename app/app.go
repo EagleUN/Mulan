@@ -3,6 +3,7 @@ package app
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -15,6 +16,11 @@ type App struct {
 }
 
 func (app *App) SetupRouter() {
+	app.Router.
+		Methods("GET").
+		Path("/").
+		HandlerFunc(app.root)
+
 	basedir := "/shares"
 	app.Router.
 		Methods("POST").
@@ -59,7 +65,23 @@ func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
 	if flag {
 		log.Println("You created a share relationship!")
 		w.WriteHeader(http.StatusCreated)
+		share := &Share{}
+		err := app.Database.QueryRow("SELECT * FROM `shares` WHERE userId = ? and  postId = ?", userId, postId).Scan(&share.UserId, &share.PostId, &share.SharedAt)
+		if err != nil {
+			log.Println("Database SELECT failed")
+		}
+		if err := json.NewEncoder(w).Encode(share); err != nil {
+			panic(err)
+		}
 	}
+
+}
+
+func (app *App) root(w http.ResponseWriter, r *http.Request) {
+	log.Println("Mulan is ready to save china")
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Mulan is ready to save china")
 
 }
 
@@ -71,21 +93,21 @@ func (app *App) getShares(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Print("No userId in the path")
 	}
-	rows, err := app.Database.Query("SELECT postId, sharedAt FROM `shares` where userId = ?", userId)
+	rows, err := app.Database.Query("SELECT * FROM `shares` where userId = ?", userId)
 	defer rows.Close()
 	if err != nil {
 		log.Println(err)
 
 	}
-	querys := make([]*Post, 0)
+	querys := make([]*Share, 0)
 	for rows.Next() {
-		post := &Post{}
-		errRow := rows.Scan(&post.PostId, &post.SharedAt)
+		share := &Share{}
+		errRow := rows.Scan(&share.UserId, &share.PostId, &share.SharedAt)
 		if errRow != nil {
 			log.Println(err)
 			continue
 		}
-		querys = append(querys, post)
+		querys = append(querys, share)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -112,6 +134,14 @@ func (app *App) deleteShare(w http.ResponseWriter, r *http.Request) {
 		flag = false
 	}
 
+	share := &Share{}
+	errSel := app.Database.QueryRow("SELECT * FROM `shares` WHERE userId = ? and  postId = ?", userId, postId).Scan(&share.UserId, &share.PostId, &share.SharedAt)
+	if errSel != nil {
+		log.Println("Database SELECT failed")
+	}
+	log.Println(share.PostId)
+	log.Println(share.UserId)
+
 	_, err := app.Database.Exec("DELETE FROM `shares` WHERE (`userId` = ?) and (`postId` = ?)", userId, postId)
 
 	if err != nil {
@@ -121,7 +151,10 @@ func (app *App) deleteShare(w http.ResponseWriter, r *http.Request) {
 	}
 	if flag {
 		log.Println("You deleted a share relationship!")
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(share); err != nil {
+			panic(err)
+		}
 	}
 
 }

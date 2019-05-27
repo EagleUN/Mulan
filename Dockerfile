@@ -1,7 +1,6 @@
-FROM golang:alpine AS build-env
+FROM golang
 WORKDIR /go/src/github.com/jschavesr/mulan
 COPY . .
-RUN apk add --no-cache git
 
 RUN go get -d ./...
 RUN go build -o goapp

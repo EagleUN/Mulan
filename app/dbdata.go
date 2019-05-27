@@ -4,7 +4,8 @@ import (
 	"time"
 )
 
-type Post struct {
+type Share struct {
+	UserId   string    `json:"userId"`
 	PostId   string    `json:"postId"`
 	SharedAt time.Time `json:"sharedAt"`
 }
