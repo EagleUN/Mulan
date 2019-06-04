@@ -9,3 +9,8 @@ type Share struct {
 	PostId   string    `json:"postId"`
 	SharedAt time.Time `json:"sharedAt"`
 }
+
+type response struct {
+	notifatedUser string `json:"notificated_user"`
+	postId        string `json:"post_id"`
+}

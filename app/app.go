@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/machinebox/graphql"
 )
 
 type App struct {
@@ -64,6 +66,33 @@ func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
 	}
 	if flag {
 		log.Println("You created a share relationship!")
+
+		client := graphql.NewClient("http://35.232.95.82:5000/graphql")
+
+		req := graphql.NewRequest(`
+		mutation ($follower: String!, $postId: String!) {
+			createShareNotification(notification: {
+				follower: $follower
+				post_id: $postId
+			}) {
+				follower
+				post_id
+			}
+		}
+	`)
+
+		req.Var("follower", userId)
+		req.Var("postId", postId)
+
+		ctx := context.Background()
+
+		var res response
+		if err := client.Run(ctx, req, &res); err != nil {
+			log.Println(err)
+		} else {
+			log.Println("Notifications triggered correctly")
+		}
+
 		w.WriteHeader(http.StatusCreated)
 		share := &Share{}
 		err := app.Database.QueryRow("SELECT * FROM `shares` WHERE userId = ? and  postId = ?", userId, postId).Scan(&share.UserId, &share.PostId, &share.SharedAt)
@@ -78,11 +107,11 @@ func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) root(w http.ResponseWriter, r *http.Request) {
+
 	log.Println("Mulan is ready to save china")
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Mulan is ready to save china")
-
 }
 
 func (app *App) getShares(w http.ResponseWriter, r *http.Request) {
