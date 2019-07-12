@@ -13,19 +13,12 @@ import (
 )
 
 func CreateDatabase() (*sql.DB, error) {
-	host, exists := os.LookupEnv("DB_HOST")
-	if !exists {
-		host = "mulan-db"
-	}
-	port, exists := os.LookupEnv("DB_PORT")
-	if !exists {
-		port = "3306"
-	}
+	serverName := "mulan-db:3306"
 	user := "user"
 	password := "password"
 	dbName := "mulan-db"
 
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=true&multiStatements=true", user, password, host, port, dbName)
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=true&multiStatements=true", user, password, serverName, dbName)
 	db, err := sql.Open("mysql", connectionString)
 	if err != nil {
 		return nil, err
