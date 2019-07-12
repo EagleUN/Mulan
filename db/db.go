@@ -14,11 +14,11 @@ import (
 
 func CreateDatabase() (*sql.DB, error) {
 	host, exists := os.LookupEnv("DB_HOST")
-	if exists == nil {
+	if !exists {
 		host = "mulan-db"
 	}
 	port, exists := os.LookupEnv("DB_PORT")
-	if exists == nil {
+	if !exists {
 		port = "3306"
 	}
 	user := "user"

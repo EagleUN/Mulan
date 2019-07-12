@@ -1,13 +1,16 @@
 version: "2.1"
 services:
-  mulan_ms:
+  mulan-ms:
     build: .
     ports:
       - "8080:8080"
     depends_on:
-      mulan_db:
+      mulan-db:
         condition: service_healthy
-  mulan_db:
+    environment:
+      DB_HOST: "mulan-db"
+      DB_PORT: "3306"
+  mulan-db:
     image: mysql
     healthcheck:
       test: "mysqlcheck -u$$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE"
@@ -15,7 +18,7 @@ services:
       timeout: 5s
       retries: 15
     environment:
-        MYSQL_DATABASE: 'mulan_db'
+        MYSQL_DATABASE: 'mulan-db'
         MYSQL_USER: 'user'
         MYSQL_PASSWORD: 'password'
         MYSQL_ROOT_PASSWORD: 'password'
