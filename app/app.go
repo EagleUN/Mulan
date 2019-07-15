@@ -107,11 +107,15 @@ func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) root(w http.ResponseWriter, r *http.Request) {
+        test, exists := os.LookupEnv("TESTENV")
+        if !exists {
+                test = "Sorry"
+        }
 
-	log.Println("Mulan is ready to save china")
+	log.Println("Mulan is ready to save china " + test)
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Mulan is ready to save china")
+	fmt.Fprintf(w, "Mulan is ready to save china " + test)
 }
 
 func (app *App) getShares(w http.ResponseWriter, r *http.Request) {
