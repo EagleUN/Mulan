@@ -57,6 +57,9 @@ func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
 		flag = false
 	}
 
+	log.Println("----------------------- PostId -----------------------")
+	log.Println(postId)
+
 	_, err := app.Database.Exec("INSERT INTO `shares` (`userId`, `postId`) VALUES (?, ?)", userId, postId)
 
 	if err != nil {
