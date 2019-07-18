@@ -70,7 +70,7 @@ func (app *App) createShare(w http.ResponseWriter, r *http.Request) {
 	if flag {
 		log.Println("You created a share relationship!")
 
-		client := graphql.NewClient("http://walt:5000/graphql")
+		client := graphql.NewClient("http://eagleun-api:5000/graphql")
 
 		req := graphql.NewRequest(`
 		mutation ($follower: String!, $postId: String!) {
